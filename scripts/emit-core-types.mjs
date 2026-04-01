@@ -1,13 +1,13 @@
 /**
- * Regenerates entrypoints/sdk/coreTypes.generated.ts from lazy Zod schemas
+ * Regenerates src/entrypoints/sdk/coreTypes.generated.ts from lazy Zod schemas
  * (dev/snapshot trees that omit the committed generated file).
  */
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 const root = join(import.meta.dirname, '..')
-const coreSchemasPath = join(root, 'entrypoints', 'sdk', 'coreSchemas.ts')
-const outPath = join(root, 'entrypoints', 'sdk', 'coreTypes.generated.ts')
+const coreSchemasPath = join(root, 'src', 'entrypoints', 'sdk', 'coreSchemas.ts')
+const outPath = join(root, 'src', 'entrypoints', 'sdk', 'coreTypes.generated.ts')
 
 const src = readFileSync(coreSchemasPath, 'utf8')
 const names = []

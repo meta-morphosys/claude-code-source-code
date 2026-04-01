@@ -1,18 +1,40 @@
-# Claude Code (local source)
+# Claude Code
 
-This is a **development** checkout of Claude Code — it runs directly with [Bun](https://bun.sh), not the official Anthropic npm bundle.
+This repository is a source checkout of Claude Code that runs directly with [Bun](https://bun.sh). It is organized for direct development: application code lives under `src/`, operational scripts live under `scripts/`, and repository docs live under `docs/`.
 
 ## Prerequisites
 
 - **[Bun](https://bun.sh)** installed and on your `PATH` (latest stable is recommended).
 - API access: **Anthropic** (`claude login`) or **OpenRouter** (see below).
 
-## Install / run the project
+## Repository layout
+
+```text
+.
+├── docs/        Maintainer and architecture notes
+├── public/      Static assets
+├── scripts/     Local automation and code generation
+└── src/         Application source
+```
+
+Key source areas:
+
+- `src/entrypoints/`: Bun entrypoints and SDK-facing contracts
+- `src/cli/`: CLI transport and command wiring
+- `src/commands/`: command implementations
+- `src/components/`: Ink UI components
+- `src/services/`: integrations and orchestration
+- `src/tools/`: tool implementations and prompts
+- `src/utils/`: shared infrastructure and helpers
+
+See `docs/architecture.md` for the source tree map.
+
+## Install and run
 
 1. Clone the repo and `cd` into it:
 
    ```bash
-   git clone https://github.com/Koki4a08/claude-code.git
+   git clone https://github.com/ashish200729/claude-code.git
    cd claude-code
    ```
 
@@ -25,17 +47,41 @@ This is a **development** checkout of Claude Code — it runs directly with [Bun
 3. Start the CLI from source (from this directory, or via a global link):
 
    ```bash
-   bun entrypoints/cli.tsx
+   bun src/entrypoints/cli.tsx
    ```
 
-   Optional: a global **`claude-local`** command (same CLI as `bun entrypoints/cli.tsx`, with a few extra env vars for parallel tool execution):
+   Optional: a global **`claude-local`** command (same CLI as `bun src/entrypoints/cli.tsx`, with a few extra env vars for parallel tool execution):
 
    ```bash
    bun link --global
    claude-local
    ```
 
-There is no separate production build for day-to-day use: the entrypoint is `entrypoints/cli.tsx`. The shipped product is a different package; here you run the repo directly.
+There is no separate production build for day-to-day use: the entrypoint is `src/entrypoints/cli.tsx`. The shipped product is a different package; here you run the repo directly.
+
+## Common scripts
+
+```bash
+bun run cli
+node scripts/emit-core-types.mjs
+node scripts/emit-control-types.mjs
+```
+
+## Validation
+
+Minimal smoke check:
+
+```bash
+bun run cli --help
+```
+
+## Fork workflow
+
+1. Fork the repository.
+2. Clone your fork.
+3. Run `bun install`.
+4. Start the CLI with `bun run cli`.
+5. Make changes inside `src/` and keep repository-level scripts and docs in sync when entrypoints move.
 
 ---
 
@@ -45,17 +91,17 @@ The key is stored in Claude Code’s **global** config: `~/.claude.json` → `en
 
 ### Save the API key (one-time)
 
-Pick one approach (the binary is named `claude` in `--help`; from source use `bun entrypoints/cli.tsx` or `claude-local`):
+Pick one approach (the binary is named `claude` in `--help`; from source use `bun src/entrypoints/cli.tsx` or `claude-local`):
 
 ```bash
 # pass the key as an argument
-bun entrypoints/cli.tsx auth openrouter set sk-or-v1-...
+bun src/entrypoints/cli.tsx auth openrouter set sk-or-v1-...
 
 # or use OPENROUTER_API_KEY if it is already exported in your shell
-bun entrypoints/cli.tsx auth openrouter set
+bun src/entrypoints/cli.tsx auth openrouter set
 
 # or pipe from stdin (handy for secrets)
-echo "$OPENROUTER_API_KEY" | bun entrypoints/cli.tsx auth openrouter set --stdin
+echo "$OPENROUTER_API_KEY" | bun src/entrypoints/cli.tsx auth openrouter set --stdin
 ```
 
 After a successful run, new sessions default to OpenRouter (`OPENROUTER_API_KEY` and `CLAUDE_CODE_USE_OPENROUTER=1` are written to config).
@@ -63,13 +109,13 @@ After a successful run, new sessions default to OpenRouter (`OPENROUTER_API_KEY`
 ### Force Anthropic for a single session
 
 ```bash
-bun entrypoints/cli.tsx --api-provider anthropic
+bun src/entrypoints/cli.tsx --api-provider anthropic
 ```
 
 ### Remove the saved OpenRouter key from global config
 
 ```bash
-bun entrypoints/cli.tsx auth openrouter clear
+bun src/entrypoints/cli.tsx auth openrouter clear
 ```
 
 *(This only clears what is stored in `~/.claude.json` — not a key you export manually in the shell.)*
@@ -97,7 +143,7 @@ You can also pass a **full model id** for the active provider — with OpenRoute
 From the shell (before the REPL):
 
 ```bash
-bun entrypoints/cli.tsx --api-provider openrouter --model anthropic/claude-sonnet-4.6
+bun src/entrypoints/cli.tsx --api-provider openrouter --model anthropic/claude-sonnet-4.6
 ```
 
 ---
@@ -105,7 +151,7 @@ bun entrypoints/cli.tsx --api-provider openrouter --model anthropic/claude-sonne
 ## Quick checklist
 
 1. `bun install`
-2. `bun entrypoints/cli.tsx auth openrouter set <key>` *(or `claude login` for Anthropic)*
-3. `bun entrypoints/cli.tsx` → use **`/model`** inside the session to switch models
+2. `bun src/entrypoints/cli.tsx auth openrouter set <key>` *(or `claude login` for Anthropic)*
+3. `bun src/entrypoints/cli.tsx` → use **`/model`** inside the session to switch models
 
 If something fails, confirm `bun --version` works and your key is valid for [OpenRouter](https://openrouter.ai/).

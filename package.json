@@ -6,7 +6,7 @@
     "claude-local": "scripts/claude-local.mjs"
   },
   "scripts": {
-    "cli": "bun entrypoints/cli.tsx",
+    "cli": "bun src/entrypoints/cli.tsx",
     "collect-deps": "node scripts/collect-npm-deps.mjs",
     "generate-sdk-core-types": "node scripts/emit-core-types.mjs",
     "generate-sdk-control-types": "node scripts/emit-control-types.mjs"

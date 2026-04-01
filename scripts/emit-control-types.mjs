@@ -1,12 +1,12 @@
 /**
- * Regenerates entrypoints/sdk/controlTypes.ts from controlSchemas Zod schemas.
+ * Regenerates src/entrypoints/sdk/controlTypes.ts from controlSchemas Zod schemas.
  */
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 const root = join(import.meta.dirname, '..')
-const schemaPath = join(root, 'entrypoints', 'sdk', 'controlSchemas.ts')
-const outPath = join(root, 'entrypoints', 'sdk', 'controlTypes.ts')
+const schemaPath = join(root, 'src', 'entrypoints', 'sdk', 'controlSchemas.ts')
+const outPath = join(root, 'src', 'entrypoints', 'sdk', 'controlTypes.ts')
 
 const src = readFileSync(schemaPath, 'utf8')
 const names = []

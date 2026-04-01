@@ -3,14 +3,14 @@
  * Global launcher for this repo: run from any cwd with `claude-local` after
  * `npm link`, `bun link`, or `npm install -g` from the repo root.
  *
- * Forwards all CLI args to entrypoints/cli.tsx using Bun.
+ * Forwards all CLI args to src/entrypoints/cli.tsx using Bun.
  */
 import { spawnSync } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const cli = join(root, 'entrypoints', 'cli.tsx')
+const cli = join(root, 'src', 'entrypoints', 'cli.tsx')
 const args = process.argv.slice(2)
 
 /** Prefer Bun (same as `bun run cli`); npm's Windows shim may invoke Node. */
@@ -34,7 +34,7 @@ const r = spawnSync(bunExec, [cli, ...args], {
 if (r.error) {
   console.error(
     r.error.message +
-      '\nInstall Bun (https://bun.sh) and ensure `bun` is on PATH, or run from repo: bun entrypoints/cli.tsx',
+      '\nInstall Bun (https://bun.sh) and ensure `bun` is on PATH, or run from repo: bun src/entrypoints/cli.tsx',
   )
   process.exit(1)
 }
