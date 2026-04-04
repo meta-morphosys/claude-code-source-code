@@ -72,11 +72,14 @@ import { cacheImagePath, storeImage } from '../../utils/imageStore.js';
 import { isMacosOptionChar, MACOS_OPTION_SPECIAL_CHARS } from '../../utils/keyboardShortcuts.js';
 import { logError } from '../../utils/log.js';
 import { isOpus1mMergeEnabled, modelDisplayString } from '../../utils/model/model.js';
+import { activateProviderForSelectedModel } from '../../utils/modelSelection.js';
+import { stripSignatureBlocks } from '../../utils/messages.js';
 import { setAutoModeActive } from '../../utils/permissions/autoModeState.js';
 import { cyclePermissionMode, getNextPermissionMode } from '../../utils/permissions/getNextPermissionMode.js';
 import { transitionPermissionMode } from '../../utils/permissions/permissionSetup.js';
 import { getPlatform } from '../../utils/platform.js';
 import type { ProcessUserInputContext } from '../../utils/processUserInput/processUserInput.js';
+import { getAPIProviderLabel } from '../../utils/providerSelection.js';
 import { editPromptInEditor } from '../../utils/promptEditor.js';
 import { hasAutoModeOptIn } from '../../utils/settings/settings.js';
 import { findBtwTriggerPositions } from '../../utils/sideQuestion.js';
@@ -132,6 +135,7 @@ type Props = {
   isLoading: boolean;
   verbose: boolean;
   messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   onAutoUpdaterResult: (result: AutoUpdaterResult) => void;
   autoUpdaterResult: AutoUpdaterResult | null;
   input: string;
@@ -202,6 +206,7 @@ function PromptInput({
   isLoading,
   verbose,
   messages,
+  setMessages,
   onAutoUpdaterResult,
   autoUpdaterResult,
   input,
@@ -2019,7 +2024,23 @@ function PromptInput({
   // Memoized callbacks for model picker to prevent re-renders when unrelated
   // state (like notifications) changes. This prevents the inline model picker
   // from visually "jumping" when notifications arrive.
-  const handleModelSelect = useCallback((model: string | null, _effort: EffortLevel | undefined) => {
+  const handleModelSelect = useCallback(async (model: string | null, _effort: EffortLevel | undefined) => {
+    let providerLabel;
+    try {
+      const provider = await activateProviderForSelectedModel(model);
+      if (provider) {
+        providerLabel = getAPIProviderLabel(provider);
+        setMessages(stripSignatureBlocks);
+      }
+    } catch (error) {
+      addNotification({
+        key: 'model-switch-failed',
+        jsx: <Text>Failed to switch model: {errorMessage(error)}</Text>,
+        priority: 'immediate',
+        timeoutMs: 5000
+      });
+      return;
+    }
     let wasFastModeDisabled = false;
     setAppState(prev => {
       wasFastModeDisabled = isFastModeEnabled() && !isFastModeSupportedByModel(model) && !!prev.fastMode;
@@ -2027,6 +2048,9 @@ function PromptInput({
         ...prev,
         mainLoopModel: model,
         mainLoopModelForSession: null,
+        ...(providerLabel ? {
+          authVersion: prev.authVersion + 1
+        } : {}),
         // Turn off fast mode if switching to a model that doesn't support it
         ...(wasFastModeDisabled && {
           fastMode: false
@@ -2036,6 +2060,9 @@ function PromptInput({
     setShowModelPicker(false);
     const effectiveFastMode = (isFastMode ?? false) && !wasFastModeDisabled;
     let message = `Model set to ${modelDisplayString(model)}`;
+    if (providerLabel) {
+      message += ` via ${providerLabel}`;
+    }
     if (isBilledAsExtraUsage(model, effectiveFastMode, isOpus1mMergeEnabled())) {
       message += ' · Billed as extra usage';
     }
@@ -2051,7 +2078,7 @@ function PromptInput({
     logEvent('tengu_model_picker_hotkey', {
       model: model as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
     });
-  }, [setAppState, addNotification, isFastMode]);
+  }, [setAppState, addNotification, isFastMode, setMessages]);
   const handleModelCancel = useCallback(() => {
     setShowModelPicker(false);
   }, []);

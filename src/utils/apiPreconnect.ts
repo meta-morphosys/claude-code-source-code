@@ -21,7 +21,7 @@
  * - proxy/mTLS/unix socket configured (preconnect would use wrong transport —
  *   the SDK passes a custom dispatcher/agent that doesn't share the global pool)
  * - Bedrock/Vertex/Foundry (different endpoints, different auth)
- * - OpenRouter uses its own base URL when CLAUDE_CODE_USE_OPENROUTER is set
+ * - OpenRouter and Copilot use their own base URLs when selected
  */
 
 import { getOauthConfig } from '../constants/oauth.js'
@@ -37,7 +37,8 @@ export function preconnectAnthropicApi(): void {
   if (
     isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK) ||
     isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX) ||
-    isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY)
+    isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY) ||
+    isEnvTruthy(process.env.CLAUDE_CODE_USE_COPILOT)
   ) {
     return
   }

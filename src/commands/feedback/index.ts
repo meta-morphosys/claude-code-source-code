@@ -15,6 +15,7 @@ const feedback = {
       isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX) ||
       isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY) ||
       isEnvTruthy(process.env.CLAUDE_CODE_USE_OPENROUTER) ||
+      isEnvTruthy(process.env.CLAUDE_CODE_USE_COPILOT) ||
       isEnvTruthy(process.env.DISABLE_FEEDBACK_COMMAND) ||
       isEnvTruthy(process.env.DISABLE_BUG_COMMAND) ||
       isEssentialTrafficOnly() ||

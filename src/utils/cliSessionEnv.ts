@@ -14,8 +14,13 @@ export function applySessionEnvFromCliArgv(argv: string[]): void {
     const v = apEq.slice('--api-provider='.length).trim().toLowerCase()
     if (v === 'openrouter') {
       process.env.CLAUDE_CODE_USE_OPENROUTER = '1'
+      delete process.env.CLAUDE_CODE_USE_COPILOT
+    } else if (v === 'copilot') {
+      process.env.CLAUDE_CODE_USE_COPILOT = '1'
+      delete process.env.CLAUDE_CODE_USE_OPENROUTER
     } else if (v === 'anthropic') {
       delete process.env.CLAUDE_CODE_USE_OPENROUTER
+      delete process.env.CLAUDE_CODE_USE_COPILOT
     }
     return
   }
@@ -25,8 +30,13 @@ export function applySessionEnvFromCliArgv(argv: string[]): void {
     const v = argv[apIdx + 1]?.trim().toLowerCase()
     if (v === 'openrouter') {
       process.env.CLAUDE_CODE_USE_OPENROUTER = '1'
+      delete process.env.CLAUDE_CODE_USE_COPILOT
+    } else if (v === 'copilot') {
+      process.env.CLAUDE_CODE_USE_COPILOT = '1'
+      delete process.env.CLAUDE_CODE_USE_OPENROUTER
     } else if (v === 'anthropic') {
       delete process.env.CLAUDE_CODE_USE_OPENROUTER
+      delete process.env.CLAUDE_CODE_USE_COPILOT
     }
   }
 }

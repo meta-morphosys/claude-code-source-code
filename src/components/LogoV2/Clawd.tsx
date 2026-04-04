@@ -11,14 +11,12 @@ type Props = {
 };
 
 // Standard-terminal pose fragments. Each row is split into segments so we can
-// vary only the parts that change (eyes, arms) while keeping the body/bg spans
-// stable. All poses end up 9 cols wide.
+// vary only the parts that change while keeping the body/bg spans stable.
+// The new silhouette is a little sharper: a horned shell on top, a compact
+// torso in the middle, and a cleaner base line underneath.
 //
-// arms-up: the row-2 arm shapes (▝▜ / ▛▘) move to row 1 as their
-// bottom-heavy mirrors (▗▟ / ▙▖) — same silhouette, one row higher.
-//
-// look-* use top-quadrant eye chars (▙/▟) so both eyes change from the
-// default (▛/▜, bottom pupils) — otherwise only one eye would appear to move.
+// arms-up lifts the side claws onto row 1.
+// look-* shifts the visor highlight so both eyes visibly move together.
 type Segments = {
   /** row 1 left (no bg): optional raised arm + side */
   r1L: string;
@@ -33,29 +31,29 @@ type Segments = {
 };
 const POSES: Record<ClawdPose, Segments> = {
   default: {
-    r1L: ' ▐',
+    r1L: ' ▗',
     r1E: '▛███▜',
-    r1R: '▌',
+    r1R: '▖ ',
     r2L: '▝▜',
     r2R: '▛▘'
   },
   'look-left': {
-    r1L: ' ▐',
+    r1L: ' ▗',
     r1E: '▟███▟',
-    r1R: '▌',
+    r1R: '▖ ',
     r2L: '▝▜',
     r2R: '▛▘'
   },
   'look-right': {
-    r1L: ' ▐',
+    r1L: ' ▗',
     r1E: '▙███▙',
-    r1R: '▌',
+    r1R: '▖ ',
     r2L: '▝▜',
     r2R: '▛▘'
   },
   'arms-up': {
     r1L: '▗▟',
-    r1E: '▛███▜',
+    r1E: '▛█▜',
     r1R: '▙▖',
     r2L: ' ▜',
     r2R: '▛ '
@@ -65,10 +63,10 @@ const POSES: Record<ClawdPose, Segments> = {
 // Apple Terminal uses a bg-fill trick (see below), so only eye poses make
 // sense. Arm poses fall back to default.
 const APPLE_EYES: Record<ClawdPose, string> = {
-  default: ' ▗   ▖ ',
-  'look-left': ' ▘   ▘ ',
-  'look-right': ' ▝   ▝ ',
-  'arms-up': ' ▗   ▖ '
+  default: '▛███▜',
+  'look-left': '▟███▟',
+  'look-right': '▙███▙',
+  'arms-up': '▛███▜'
 };
 export function Clawd(t0) {
   const $ = _c(26);
@@ -164,7 +162,7 @@ export function Clawd(t0) {
   }
   let t11;
   if ($[22] === Symbol.for("react.memo_cache_sentinel")) {
-    t11 = <Text color="clawd_body">{"  "}▘▘ ▝▝{"  "}</Text>;
+    t11 = <Text color="clawd_body">{"  "}▘▝▝▝▘{"  "}</Text>;
     $[22] = t11;
   } else {
     t11 = $[22];
@@ -187,7 +185,7 @@ function AppleTerminalClawd(t0) {
   } = t0;
   let t1;
   if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
-    t1 = <Text color="clawd_body">▗</Text>;
+    t1 = <Text color="clawd_body"> ▗</Text>;
     $[0] = t1;
   } else {
     t1 = $[0];
@@ -203,7 +201,7 @@ function AppleTerminalClawd(t0) {
   }
   let t4;
   if ($[3] === Symbol.for("react.memo_cache_sentinel")) {
-    t4 = <Text color="clawd_body">▖</Text>;
+    t4 = <Text color="clawd_body">▖ </Text>;
     $[3] = t4;
   } else {
     t4 = $[3];
@@ -219,8 +217,8 @@ function AppleTerminalClawd(t0) {
   let t6;
   let t7;
   if ($[6] === Symbol.for("react.memo_cache_sentinel")) {
-    t6 = <Text backgroundColor="clawd_body">{" ".repeat(7)}</Text>;
-    t7 = <Text color="clawd_body">▘▘ ▝▝</Text>;
+    t6 = <Text backgroundColor="clawd_body">{" ".repeat(9)}</Text>;
+    t7 = <Text color="clawd_body">{"  "}▘▝▝▝▘{"  "}</Text>;
     $[6] = t6;
     $[7] = t7;
   } else {

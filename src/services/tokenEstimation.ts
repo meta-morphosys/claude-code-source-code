@@ -147,6 +147,10 @@ export async function countMessagesTokensWithAPI(
       const betas = getModelBetas(model)
       const containsThinking = hasThinkingBlocks(messages)
 
+      if (getAPIProvider() === 'copilot') {
+        return null
+      }
+
       if (getAPIProvider() === 'bedrock') {
         // @anthropic-sdk/bedrock-sdk doesn't support countTokens currently
         return countTokensWithBedrock({
@@ -275,6 +279,10 @@ export async function countTokensViaHaikuFallback(
     isVertexGlobalEndpoint || isBedrockWithThinking || isVertexWithThinking
       ? getDefaultSonnetModel()
       : getSmallFastModel()
+  if (getAPIProvider() === 'copilot') {
+    return null
+  }
+
   const anthropic = await getAnthropicClient({
     maxRetries: 1,
     model,

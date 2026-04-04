@@ -245,7 +245,8 @@ export function buildAPIProviderProperties(): Property[] {
       bedrock: 'AWS Bedrock',
       vertex: 'Google Vertex AI',
       foundry: 'Microsoft Foundry',
-      openrouter: 'OpenRouter'
+      openrouter: 'OpenRouter',
+      copilot: 'GitHub Copilot',
     }[apiProvider];
     properties.push({
       label: 'API provider',

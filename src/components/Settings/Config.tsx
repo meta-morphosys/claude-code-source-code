@@ -20,6 +20,7 @@ import { isBridgeEnabled } from '../../bridge/bridgeEnabled.js';
 import { ThemePicker } from '../ThemePicker.js';
 import { useAppState, useSetAppState, useAppStateStore } from '../../state/AppState.js';
 import { ModelPicker } from '../ModelPicker.js';
+import { ProviderPicker } from '../ProviderPicker.js';
 import { modelDisplayString, isOpus1mMergeEnabled } from '../../utils/model/model.js';
 import { isBilledAsExtraUsage } from '../../utils/extraUsage.js';
 import { ClaudeMdExternalIncludesDialog } from '../ClaudeMdExternalIncludesDialog.js';
@@ -49,6 +50,12 @@ import { useSearchInput } from '../../hooks/useSearchInput.js';
 import { useTerminalSize } from '../../hooks/useTerminalSize.js';
 import { clearFastModeCooldown, FAST_MODE_MODEL_DISPLAY, isFastModeAvailable, isFastModeEnabled, getFastModeModel, isFastModeSupportedByModel } from '../../utils/fastMode.js';
 import { isFullscreenEnvEnabled } from '../../utils/fullscreen.js';
+import { stripSignatureBlocks } from '../../utils/messages.js';
+import { activateProvider, getAPIProviderLabel, getCurrentSelectableProvider, isSelectableAPIProvider, applyProviderEnvToProcess } from '../../utils/providerSelection.js';
+import { reloadModelStringsForCurrentProvider } from '../../utils/model/modelStrings.js';
+import { fetchBootstrapData } from '../../services/api/bootstrap.js';
+import { getAPIProvider } from '../../utils/model/providers.js';
+import { activateProviderForSelectedModel } from '../../utils/modelSelection.js';
 type Props = {
   onClose: (result?: string, options?: {
     display?: CommandResultDisplay;
@@ -82,7 +89,7 @@ type Setting = (SettingBase & {
   onChange(value: string): void;
   type: 'managedEnum';
 });
-type SubMenu = 'Theme' | 'Model' | 'TeammateModel' | 'ExternalIncludes' | 'OutputStyle' | 'ChannelDowngrade' | 'Language' | 'EnableAutoUpdates';
+type SubMenu = 'Theme' | 'Provider' | 'Model' | 'TeammateModel' | 'ExternalIncludes' | 'OutputStyle' | 'ChannelDowngrade' | 'Language' | 'EnableAutoUpdates';
 export function Config({
   onClose,
   context,
@@ -176,6 +183,7 @@ export function Config({
   const isDirty = React.useRef(false);
   const [showThinkingWarning, setShowThinkingWarning] = useState(false);
   const [showSubmenu, setShowSubmenu] = useState<SubMenu | null>(null);
+  const [initialAPIProvider] = useState(() => getAPIProvider());
   const {
     query: searchQuery,
     setQuery: setSearchQuery,
@@ -201,19 +209,37 @@ export function Config({
   const memoryFiles = React.use(getMemoryFiles(true));
   const shouldShowExternalIncludesToggle = hasExternalClaudeMdIncludes(memoryFiles);
   const autoUpdaterDisabledReason = getAutoUpdaterDisabledReason();
-  function onChangeMainModelConfig(value: string | null): void {
+  async function onChangeMainModelConfig(value: string | null): Promise<void> {
     const previousModel = mainLoopModel;
     logEvent('tengu_config_model_changed', {
       from_model: previousModel as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
       to_model: value as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
     });
+    let providerLabel;
+    try {
+      const provider = await activateProviderForSelectedModel(value);
+      if (provider) {
+        providerLabel = getAPIProviderLabel(provider);
+        context.onChangeAPIKey();
+        context.setMessages(stripSignatureBlocks);
+      }
+    } catch (error) {
+      logError(error);
+      return;
+    }
     setAppState(prev => ({
       ...prev,
       mainLoopModel: value,
-      mainLoopModelForSession: null
+      mainLoopModelForSession: null,
+      ...(providerLabel ? {
+        authVersion: prev.authVersion + 1
+      } : {})
     }));
     setChanges(prev_0 => {
-      const valStr = modelDisplayString(value) + (isBilledAsExtraUsage(value, false, isOpus1mMergeEnabled()) ? ' · Billed as extra usage' : '');
+      let valStr = modelDisplayString(value) + (isBilledAsExtraUsage(value, false, isOpus1mMergeEnabled()) ? ' · Billed as extra usage' : '');
+      if (providerLabel) {
+        valStr += ` · ${providerLabel}`;
+      }
       if ('model' in prev_0) {
         const {
           model,
@@ -229,6 +255,34 @@ export function Config({
         model: valStr
       };
     });
+  }
+  async function onChangeProviderConfig(value: 'firstParty' | 'openrouter' | 'copilot'): Promise<void> {
+    const previousProvider = getCurrentSelectableProvider();
+    if (value === previousProvider) {
+      return;
+    }
+    logEvent('tengu_config_provider_changed', {
+      from_provider: previousProvider as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
+      to_provider: value as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
+    });
+    try {
+      await activateProvider(value);
+      context.onChangeAPIKey();
+      context.setMessages(stripSignatureBlocks);
+      setAppState(prev => ({
+        ...prev,
+        mainLoopModel: null,
+        mainLoopModelForSession: null,
+        authVersion: prev.authVersion + 1
+      }));
+      setGlobalConfig(getGlobalConfig());
+      setChanges(prev => ({
+        ...prev,
+        provider: getAPIProviderLabel(value)
+      }));
+    } catch (error) {
+      logError(error);
+    }
   }
   function onChangeVerbose(value_0: boolean): void {
     // Update the global config to persist the setting
@@ -808,7 +862,13 @@ export function Config({
         enabled: enabled_4
       });
     }
-  }, {
+  }, ...(isSelectableAPIProvider(getAPIProvider()) ? [{
+    id: 'provider',
+    label: 'Provider',
+    value: getAPIProviderLabel(getCurrentSelectableProvider()),
+    type: 'managedEnum' as const,
+    onChange: () => {}
+  }] : []), {
     id: 'model',
     label: 'Model',
     value: mainLoopModel === null ? 'Default (recommended)' : mainLoopModel,
@@ -1248,7 +1308,13 @@ export function Config({
     if (getUserMsgOptIn() !== initialUserMsgOptIn) {
       setUserMsgOptIn(initialUserMsgOptIn);
     }
-  }, [themeSetting, setTheme, initialLocalSettings, initialUserSettings, initialAppState, initialUserMsgOptIn, setAppState]);
+    setGlobalConfig(initialConfig.current);
+    if (isSelectableAPIProvider(initialAPIProvider)) {
+      applyProviderEnvToProcess(initialAPIProvider);
+      void reloadModelStringsForCurrentProvider();
+      void fetchBootstrapData();
+    }
+  }, [themeSetting, setTheme, initialLocalSettings, initialUserSettings, initialAppState, initialUserMsgOptIn, setAppState, initialAPIProvider]);
 
   // Escape: revert all changes (if any) and close.
   const handleEscape = useCallback(() => {
@@ -1298,12 +1364,16 @@ export function Config({
       }
       return;
     }
-    if (setting_0.id === 'theme' || setting_0.id === 'model' || setting_0.id === 'teammateDefaultModel' || setting_0.id === 'showExternalIncludesDialog' || setting_0.id === 'outputStyle' || setting_0.id === 'language') {
+    if (setting_0.id === 'theme' || setting_0.id === 'provider' || setting_0.id === 'model' || setting_0.id === 'teammateDefaultModel' || setting_0.id === 'showExternalIncludesDialog' || setting_0.id === 'outputStyle' || setting_0.id === 'language') {
       // managedEnum items open a submenu — isDirty is set by the submenu's
       // completion callback, not here (submenu may be cancelled).
       switch (setting_0.id) {
         case 'theme':
           setShowSubmenu('Theme');
+          setTabsHidden(true);
+          return;
+        case 'provider':
+          setShowSubmenu('Provider');
           setTabsHidden(true);
           return;
         case 'model':
@@ -1467,10 +1537,20 @@ export function Config({
               </Byline>
             </Text>
           </Box>
+        </> : showSubmenu === 'Provider' ? <>
+          <ProviderPicker onSelect={provider => {
+        isDirty.current = true;
+        void onChangeProviderConfig(provider);
+        setShowSubmenu(null);
+        setTabsHidden(false);
+      }} onCancel={() => {
+        setShowSubmenu(null);
+        setTabsHidden(false);
+      }} headerText="Choose which provider Claude Code should use for this session and future runs." />
         </> : showSubmenu === 'Model' ? <>
           <ModelPicker initial={mainLoopModel} onSelect={(model_0, _effort) => {
         isDirty.current = true;
-        onChangeMainModelConfig(model_0);
+        void onChangeMainModelConfig(model_0);
         setShowSubmenu(null);
         setTabsHidden(false);
       }} onCancel={() => {

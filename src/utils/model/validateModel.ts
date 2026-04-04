@@ -3,6 +3,7 @@ import { MODEL_ALIASES } from './aliases.js'
 import { isModelAllowed } from './modelAllowlist.js'
 import { getAPIProvider } from './providers.js'
 import { sideQuery } from '../sideQuery.js'
+import { getGlobalConfig } from '../config.js'
 import {
   NotFoundError,
   APIError,
@@ -38,6 +39,19 @@ export async function validateModel(
   // Check if it's a known alias (these are always valid)
   const lowerModel = normalizedModel.toLowerCase()
   if ((MODEL_ALIASES as readonly string[]).includes(lowerModel)) {
+    return { valid: true }
+  }
+
+  const cachedModel = getGlobalConfig().additionalModelOptionsCache?.find(
+    option => option.value === normalizedModel,
+  )
+  if (cachedModel?.disabled) {
+    return {
+      valid: false,
+      error: cachedModel.description,
+    }
+  }
+  if (cachedModel?.provider) {
     return { valid: true }
   }
 

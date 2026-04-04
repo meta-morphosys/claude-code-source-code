@@ -54,6 +54,15 @@ async function getBedrockModelStrings(): Promise<ModelStrings> {
   return out
 }
 
+async function getModelStringsForProvider(
+  provider: APIProvider,
+): Promise<ModelStrings> {
+  if (provider === 'bedrock') {
+    return getBedrockModelStrings()
+  }
+  return getBuiltinModelStrings(provider)
+}
+
 /**
  * Layer user-configured modelOverrides (from settings.json) on top of the
  * provider-derived model strings. Overrides are keyed by canonical first-party
@@ -163,4 +172,10 @@ export async function ensureModelStringsInitialized(): Promise<void> {
 
   // For Bedrock, wait for the profile fetch
   await updateBedrockModelStrings()
+}
+
+export async function reloadModelStringsForCurrentProvider(): Promise<void> {
+  const provider = getAPIProvider()
+  const ms = await getModelStringsForProvider(provider)
+  setModelStringsState(ms)
 }

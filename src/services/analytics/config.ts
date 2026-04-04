@@ -23,6 +23,7 @@ export function isAnalyticsDisabled(): boolean {
     isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX) ||
     isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY) ||
     isEnvTruthy(process.env.CLAUDE_CODE_USE_OPENROUTER) ||
+    isEnvTruthy(process.env.CLAUDE_CODE_USE_COPILOT) ||
     isTelemetryDisabled()
   )
 }

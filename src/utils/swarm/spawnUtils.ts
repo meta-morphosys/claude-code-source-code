@@ -66,6 +66,9 @@ export function buildInheritedCliFlags(options?: {
   if (process.env.CLAUDE_CODE_USE_OPENROUTER === '1') {
     flags.push('--api-provider openrouter')
   }
+  if (process.env.CLAUDE_CODE_USE_COPILOT === '1') {
+    flags.push('--api-provider copilot')
+  }
 
   if (process.env.CLAUDE_CODE_DISABLE_WEB_SEARCH === '1') {
     flags.push('--no-web-search')
@@ -110,12 +113,15 @@ const TEAMMATE_ENV_VARS = [
   'CLAUDE_CODE_USE_VERTEX',
   'CLAUDE_CODE_USE_FOUNDRY',
   'CLAUDE_CODE_USE_OPENROUTER',
+  'CLAUDE_CODE_USE_COPILOT',
   // Custom API endpoint
   'ANTHROPIC_BASE_URL',
   'OPENROUTER_API_KEY',
   'OPENROUTER_BASE_URL',
   'OPENROUTER_HTTP_REFERER',
   'OPENROUTER_APP_TITLE',
+  'GITHUB_COPILOT_ACCESS_TOKEN',
+  'GITHUB_COPILOT_ENTERPRISE_URL',
   'CLAUDE_CODE_DISABLE_WEB_SEARCH',
   // Config directory override
   'CLAUDE_CONFIG_DIR',

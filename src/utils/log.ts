@@ -171,6 +171,7 @@ export function logError(error: unknown): void {
       isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX) ||
       isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY) ||
       isEnvTruthy(process.env.CLAUDE_CODE_USE_OPENROUTER) ||
+      isEnvTruthy(process.env.CLAUDE_CODE_USE_COPILOT) ||
       process.env.DISABLE_ERROR_REPORTING ||
       isEssentialTrafficOnly()
     ) {

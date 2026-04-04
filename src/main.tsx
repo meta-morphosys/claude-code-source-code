@@ -1004,7 +1004,7 @@ async function run(): Promise<CommanderCommand> {
     return Number.isFinite(n) ? n : undefined;
   }).hideHelp()).option('--from-pr [value]', 'Resume a session linked to a PR by PR number/URL, or open interactive picker with optional search term', value => value || true).option('--no-session-persistence', 'Disable session persistence - sessions will not be saved to disk and cannot be resumed (only works with --print)').addOption(new Option('--resume-session-at <message id>', 'When resuming, only messages up to and including the assistant message with <message.id> (use with --resume in print mode)').argParser(String).hideHelp()).addOption(new Option('--rewind-files <user-message-id>', 'Restore files to state at the specified user message and exit (requires --resume)').hideHelp())
   // @[MODEL LAUNCH]: Update the example model ID in the --model help text.
-  .addOption(new Option('--api-provider <provider>', 'API backend: anthropic (default, direct Anthropic API) or openrouter (set OPENROUTER_API_KEY; enables CLAUDE_CODE_USE_OPENROUTER)').choices(['anthropic', 'openrouter'])).option('--no-web-search', 'Disable the built-in WebSearch tool for this session', () => true).option('--model <model>', `Model for the current session: alias ('sonnet', 'opus'), full Anthropic id, or any provider-specific id (e.g. OpenRouter anthropic/claude-sonnet-4.6 or openai/gpt-4o).`).addOption(new Option('--effort <level>', `Effort level for the current session (low, medium, high, max)`).argParser((rawValue: string) => {
+  .addOption(new Option('--api-provider <provider>', 'API backend: anthropic (default), openrouter, or copilot.').choices(['anthropic', 'openrouter', 'copilot'])).option('--no-web-search', 'Disable the built-in WebSearch tool for this session', () => true).option('--model <model>', `Model for the current session: alias ('sonnet', 'opus'), full Anthropic id, or any provider-specific id (e.g. OpenRouter anthropic/claude-sonnet-4.6 or Copilot gpt-5).`).addOption(new Option('--effort <level>', `Effort level for the current session (low, medium, high, max)`).argParser((rawValue: string) => {
     const value = rawValue.toLowerCase();
     const allowed = ['low', 'medium', 'high', 'max'];
     if (!allowed.includes(value)) {
@@ -4182,6 +4182,29 @@ async function run(): Promise<CommanderCommand> {
       authOpenRouterClear
     } = await import('./cli/handlers/auth.js');
     await authOpenRouterClear();
+  });
+  const authCopilot = auth.command('copilot').description('Save or clear GitHub Copilot credentials in global config (~/.claude.json env). Defaults later runs to Copilot unless you pass --api-provider anthropic.').configureHelp(createSortedHelpConfig());
+  authCopilot.command('login').description('Authenticate with GitHub Copilot using the device flow.').option('--enterprise-url <url>', 'GitHub Enterprise hostname or URL (optional)').action(async (opts: {
+    enterpriseUrl?: string;
+  }) => {
+    const {
+      authCopilotLogin
+    } = await import('./cli/handlers/auth.js');
+    await authCopilotLogin({
+      enterpriseUrl: opts.enterpriseUrl
+    });
+  });
+  authCopilot.command('refresh-models').description('Refresh GitHub Copilot model list for the model picker').action(async () => {
+    const {
+      authCopilotRefreshModels
+    } = await import('./cli/handlers/auth.js');
+    await authCopilotRefreshModels();
+  });
+  authCopilot.command('clear').description('Remove saved GitHub Copilot token and routing flag from global config').action(async () => {
+    const {
+      authCopilotClear
+    } = await import('./cli/handlers/auth.js');
+    await authCopilotClear();
   });
 
   /**

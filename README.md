@@ -50,10 +50,16 @@ See `docs/architecture.md` for the source tree map.
    bun src/entrypoints/cli.tsx
    ```
 
-   Optional: a global **`claude-local`** command (same CLI as `bun src/entrypoints/cli.tsx`, with a few extra env vars for parallel tool execution):
+   Optional: a global **`ashishcode`** command (same CLI as `bun src/entrypoints/cli.tsx`, with a few extra env vars for parallel tool execution):
 
    ```bash
    bun link --global
+   ashishcode
+   ```
+
+   Backward-compatible local alias:
+
+   ```bash
    claude-local
    ```
 
@@ -91,7 +97,7 @@ The key is stored in Claude Code’s **global** config: `~/.claude.json` → `en
 
 ### Save the API key (one-time)
 
-Pick one approach (the binary is named `claude` in `--help`; from source use `bun src/entrypoints/cli.tsx` or `claude-local`):
+Pick one approach (the binary is named `claude` in `--help`; from source use `bun src/entrypoints/cli.tsx`, `ashishcode`, or `claude-local`):
 
 ```bash
 # pass the key as an argument
@@ -118,15 +124,15 @@ bun src/entrypoints/cli.tsx --api-provider anthropic
 bun src/entrypoints/cli.tsx auth openrouter clear
 ```
 
-*(This only clears what is stored in `~/.claude.json` — not a key you export manually in the shell.)*
+_(This only clears what is stored in `~/.claude.json` — not a key you export manually in the shell.)_
 
 ### Optional environment variables
 
-| Variable | Purpose |
-|----------|---------|
-| `OPENROUTER_BASE_URL` | Defaults to `https://openrouter.ai/api` |
-| `OPENROUTER_HTTP_REFERER` | HTTP `Referer` for OpenRouter |
-| `OPENROUTER_APP_TITLE` | App title sent to OpenRouter |
+| Variable                  | Purpose                                 |
+| ------------------------- | --------------------------------------- |
+| `OPENROUTER_BASE_URL`     | Defaults to `https://openrouter.ai/api` |
+| `OPENROUTER_HTTP_REFERER` | HTTP `Referer` for OpenRouter           |
+| `OPENROUTER_APP_TITLE`    | App title sent to OpenRouter            |
 
 ---
 
@@ -151,7 +157,33 @@ bun src/entrypoints/cli.tsx --api-provider openrouter --model anthropic/claude-s
 ## Quick checklist
 
 1. `bun install`
-2. `bun src/entrypoints/cli.tsx auth openrouter set <key>` *(or `claude login` for Anthropic)*
+2. `bun src/entrypoints/cli.tsx auth openrouter set <key>` _(or `claude login` for Anthropic)_
 3. `bun src/entrypoints/cli.tsx` → use **`/model`** inside the session to switch models
 
 If something fails, confirm `bun --version` works and your key is valid for [OpenRouter](https://openrouter.ai/).
+
+## Publish as `ashishcode`
+
+Local release checks:
+
+```bash
+bun run test:release
+bun run cli --help
+npm pack --dry-run
+```
+
+Publish the public package:
+
+```bash
+npm login
+npm publish --access public
+```
+
+Install globally after publish:
+
+```bash
+npm i -g ashishcode
+ashishcode
+```
+
+This package runs the source CLI through Bun, so Bun must be installed on the target machine.
