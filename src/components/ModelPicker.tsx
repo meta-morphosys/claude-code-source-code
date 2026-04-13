@@ -408,7 +408,7 @@ export function ModelPicker({
         </Text>
         <Text dimColor>
           {headerText ??
-            "Switch between Claude models. Applies to this session and future Claude Code sessions. Use / to search."}
+            "Switch between Claude models. Applies to this session and future Obsidian Code sessions. Use / to search."}
         </Text>
         {sessionModel ? (
           <Text dimColor>

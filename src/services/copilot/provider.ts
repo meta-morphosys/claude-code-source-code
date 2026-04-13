@@ -310,8 +310,8 @@ export function parseCopilotModelOptions(raw: unknown): Array<{
       description: supportsChatCompletions(model)
         ? "GitHub Copilot model"
         : model.capabilities?.supports?.tool_calls === false
-          ? "GitHub Copilot model · Tool calling unavailable, disabled in Claude Code"
-          : "GitHub Copilot model · Unsupported endpoint shape for Claude Code",
+          ? "GitHub Copilot model · Tool calling unavailable, disabled in Obsidian Code"
+          : "GitHub Copilot model · Unsupported endpoint shape for Obsidian Code",
       disabled: !supportsChatCompletions(model),
       provider: "copilot",
     }));

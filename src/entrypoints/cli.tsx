@@ -11,10 +11,10 @@ if (typeof MACRO === 'undefined') {
   ;(globalThis as any).MACRO = {
     VERSION: 'dev',
     BUILD_TIME: undefined as string | undefined,
-    PACKAGE_URL: '@anthropic-ai/claude-code',
-    NATIVE_PACKAGE_URL: '@anthropic-ai/claude-code',
-    FEEDBACK_CHANNEL: 'https://github.com/anthropics/claude-code/issues',
-    ISSUES_EXPLAINER: 'open an issue at https://github.com/anthropics/claude-code/issues',
+    PACKAGE_URL: 'obsidian-code',
+    NATIVE_PACKAGE_URL: 'obsidian-code',
+    FEEDBACK_CHANNEL: 'https://github.com/meta-morphosys/obsidian-code/issues',
+    ISSUES_EXPLAINER: 'open an issue at https://github.com/meta-morphosys/obsidian-code/issues',
     VERSION_CHANGELOG: '',
   }
 }
@@ -57,7 +57,7 @@ async function main(): Promise<void> {
     // MACRO.VERSION is injected in release bundles; source runs use getAppVersion() → 'dev'.
     const version = getAppVersion();
     // biome-ignore lint/suspicious/noConsole:: intentional console output
-    console.log(`${version} (Claude Code)`);
+    console.log(`${version} (Obsidian Code)`);
     return;
   }
 

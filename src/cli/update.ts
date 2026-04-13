@@ -127,7 +127,7 @@ export async function update() {
         writeToStdout(`Update available: ${getAppVersion()} → ${latest}\n`)
         writeToStdout('\n')
         writeToStdout('To update, run:\n')
-        writeToStdout(chalk.bold('  brew upgrade claude-code') + '\n')
+        writeToStdout(chalk.bold('  brew upgrade obsidian-code') + '\n')
       } else {
         writeToStdout('Claude is up to date!\n')
       }
@@ -151,7 +151,7 @@ export async function update() {
         writeToStdout(`Update available: ${getAppVersion()} → ${latest}\n`)
         writeToStdout('\n')
         writeToStdout('To update, run:\n')
-        writeToStdout(chalk.bold('  apk upgrade claude-code') + '\n')
+        writeToStdout(chalk.bold('  apk upgrade obsidian-code') + '\n')
       } else {
         writeToStdout('Claude is up to date!\n')
       }
@@ -239,7 +239,7 @@ export async function update() {
 
       if (result.latestVersion === getAppVersion()) {
         writeToStdout(
-          chalk.green(`Claude Code is up to date (${getAppVersion()})`) + '\n',
+          chalk.green(`Obsidian Code is up to date (${getAppVersion()})`) + '\n',
         )
       } else {
         writeToStdout(
@@ -309,7 +309,7 @@ export async function update() {
   // Check if versions match exactly, including any build metadata (like SHA)
   if (latestVersion === getAppVersion()) {
     writeToStdout(
-      chalk.green(`Claude Code is up to date (${getAppVersion()})`) + '\n',
+      chalk.green(`Obsidian Code is up to date (${getAppVersion()})`) + '\n',
     )
     await gracefulShutdown(0)
   }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Public launcher for this repo: run from any cwd with `ashishcode` after
- * `npm install -g ashishcode`, `npm link`, or `bun link --global`.
+ * Public launcher for this repo: run from any cwd with `obsidian` after
+ * `npm install -g obsidian-code`, `npm link`, or `bun link --global`.
  *
  * Forwards all CLI args to src/entrypoints/cli.tsx using Bun.
  */

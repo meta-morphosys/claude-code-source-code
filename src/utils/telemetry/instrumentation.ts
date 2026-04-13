@@ -402,7 +402,7 @@ async function initializeBetaTracing(
 
   // Initialize event logger
   const eventLogger = logs.getLogger(
-    'com.anthropic.claude_code.events',
+    'com.metamorphosys.obsidian_code.events',
     getAppVersion(),
   )
   setEventLogger(eventLogger)
@@ -472,7 +472,7 @@ export async function initializeTelemetry() {
   // Create base resource with service attributes
   const platform = getPlatform()
   const baseAttributes: Record<string, string> = {
-    [ATTR_SERVICE_NAME]: 'claude-code',
+    [ATTR_SERVICE_NAME]: 'obsidian-code',
     [ATTR_SERVICE_VERSION]: getAppVersion(),
   }
 
@@ -561,7 +561,7 @@ export async function initializeTelemetry() {
     }
     registerCleanup(shutdownTelemetry)
 
-    return meterProvider.getMeter('com.anthropic.claude_code', getAppVersion())
+    return meterProvider.getMeter('com.metamorphosys.obsidian_code', getAppVersion())
   }
 
   const meterProvider = new MeterProvider({
@@ -601,7 +601,7 @@ export async function initializeTelemetry() {
 
       // Initialize event logger
       const eventLogger = logs.getLogger(
-        'com.anthropic.claude_code.events',
+        'com.metamorphosys.obsidian_code.events',
         getAppVersion(),
       )
       setEventLogger(eventLogger)
@@ -698,7 +698,7 @@ Current timeout: ${timeoutMs}ms
   // Always register shutdown (internal metrics are always enabled)
   registerCleanup(shutdownTelemetry)
 
-  return meterProvider.getMeter('com.anthropic.claude_code', getAppVersion())
+  return meterProvider.getMeter('com.metamorphosys.obsidian_code', getAppVersion())
 }
 
 /**

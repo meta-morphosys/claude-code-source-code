@@ -1162,7 +1162,7 @@ export function Config({
     });
     // Check for API key changes
     // On homespace, ANTHROPIC_API_KEY is preserved in process.env for child
-    // processes but ignored by Claude Code itself (see auth.ts).
+    // processes but ignored by Obsidian Code itself (see auth.ts).
     const effectiveApiKey = isRunningOnHomespace() ? undefined : process.env.ANTHROPIC_API_KEY;
     const initialUsingCustomKey = Boolean(effectiveApiKey && initialConfig.current.customApiKeyResponses?.approved?.includes(normalizeApiKeyForConfig(effectiveApiKey)));
     const currentUsingCustomKey = Boolean(effectiveApiKey && globalConfig.customApiKeyResponses?.approved?.includes(normalizeApiKeyForConfig(effectiveApiKey)));
@@ -1546,7 +1546,7 @@ export function Config({
       }} onCancel={() => {
         setShowSubmenu(null);
         setTabsHidden(false);
-      }} headerText="Choose which provider Claude Code should use for this session and future runs." />
+      }} headerText="Choose which provider Obsidian Code should use for this session and future runs." />
         </> : showSubmenu === 'Model' ? <>
           <ModelPicker initial={mainLoopModel} onSelect={(model_0, _effort) => {
         isDirty.current = true;
