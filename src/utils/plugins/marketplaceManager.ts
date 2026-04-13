@@ -311,7 +311,7 @@ export async function loadKnownMarketplacesConfigSafe(): Promise<KnownMarketplac
     return await loadKnownMarketplacesConfig()
   } catch {
     // Inner function already logged via logForDebugging. Don't logError here —
-    // corrupted user config isn't a Obsidian Code bug, shouldn't hit the error file.
+    // corrupted user config isn't an Obsidian Code bug, shouldn't hit the error file.
     return {}
   }
 }

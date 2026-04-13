@@ -4,7 +4,7 @@
  */
 
 /**
- * A session ID uniquely identifies a Obsidian Code session.
+ * A session ID uniquely identifies an Obsidian Code session.
  * Returned by getSessionId().
  */
 export type SessionId = string & { readonly __brand: 'SessionId' }

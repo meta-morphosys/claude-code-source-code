@@ -61,7 +61,7 @@ This PR adds a GitHub Actions workflow that enables Obsidian Code integration in
 
 ### What is Obsidian Code?
 
-[Obsidian Code](https://claude.com/claude-code) is an AI coding agent that can help with:
+[Obsidian Code](https://github.com/meta-morphosys/obsidian-code) is an AI coding agent that can help with:
 - Bug fixes and improvements  
 - Documentation updates
 - Implementing new features
