@@ -52,7 +52,7 @@ export function ProviderPicker({
     <Box flexDirection="column" gap={1}>
       <Text dimColor>
         {headerText ??
-          "Choose the provider Claude Code should use by default. Connected providers are shown first."}
+          "Choose the provider Obsidian Code should use by default. Connected providers are shown first."}
       </Text>
 
       <Box flexDirection="column" marginTop={1}>

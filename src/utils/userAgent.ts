@@ -7,5 +7,5 @@ import { getAppVersion } from './appVersion.js'
  */
 
 export function getClaudeCodeUserAgent(): string {
-  return `claude-code/${getAppVersion()}`
+  return `obsidian-code/${getAppVersion()}`
 }

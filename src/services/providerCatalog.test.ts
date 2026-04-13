@@ -86,7 +86,7 @@ describe("Copilot provider catalog", () => {
         value: "legacy-chat",
         label: "Legacy Chat",
         description:
-          "GitHub Copilot model · Tool calling unavailable, disabled in Claude Code",
+          "GitHub Copilot model · Tool calling unavailable, disabled in Obsidian Code",
         disabled: true,
         provider: "copilot",
       },

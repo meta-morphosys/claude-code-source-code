@@ -1,6 +1,6 @@
-# Claude Code
+# Obsidian Code
 
-This repository is a source checkout of Claude Code that runs directly with [Bun](https://bun.sh). It is organized for direct development: application code lives under `src/`, operational scripts live under `scripts/`, and repository docs live under `docs/`.
+This repository is a source checkout of Obsidian Code that runs directly with [Bun](https://bun.sh). It is organized for direct development: application code lives under `src/`, operational scripts live under `scripts/`, and repository docs live under `docs/`.
 
 ## Prerequisites
 
@@ -34,8 +34,8 @@ See `docs/architecture.md` for the source tree map.
 1. Clone the repo and `cd` into it:
 
    ```bash
-   git clone https://github.com/ashish200729/claude-code.git
-   cd claude-code
+   git clone https://github.com/meta-morphosys/obsidian-code.git
+   cd obsidian-code
    ```
 
 2. Install dependencies:
@@ -50,17 +50,17 @@ See `docs/architecture.md` for the source tree map.
    bun src/entrypoints/cli.tsx
    ```
 
-   Optional: a global **`ashishcode`** command (same CLI as `bun src/entrypoints/cli.tsx`, with a few extra env vars for parallel tool execution):
+   Optional: a global **`obsidian`** command (same CLI as `bun src/entrypoints/cli.tsx`, with a few extra env vars for parallel tool execution):
 
    ```bash
    bun link --global
-   ashishcode
+   obsidian
    ```
 
    Backward-compatible local alias:
 
    ```bash
-   claude-local
+   obsidian-local
    ```
 
 There is no separate production build for day-to-day use: the entrypoint is `src/entrypoints/cli.tsx`. The shipped product is a different package; here you run the repo directly.
@@ -93,11 +93,11 @@ bun run cli --help
 
 ## OpenRouter — set the API key from the CLI
 
-The key is stored in Claude Code’s **global** config: `~/.claude.json` → `env`, together with the flag that routes traffic to OpenRouter.
+The key is stored in Obsidian Code's **global** config: `~/.claude.json` → `env`, together with the flag that routes traffic to OpenRouter.
 
 ### Save the API key (one-time)
 
-Pick one approach (the binary is named `claude` in `--help`; from source use `bun src/entrypoints/cli.tsx`, `ashishcode`, or `claude-local`):
+Pick one approach (the binary is named `claude` in `--help`; from source use `bun src/entrypoints/cli.tsx`, `obsidian`, or `obsidian-local`):
 
 ```bash
 # pass the key as an argument
@@ -162,7 +162,7 @@ bun src/entrypoints/cli.tsx --api-provider openrouter --model anthropic/claude-s
 
 If something fails, confirm `bun --version` works and your key is valid for [OpenRouter](https://openrouter.ai/).
 
-## Publish as `ashishcode`
+## Publish as `obsidian-code`
 
 Local release checks:
 
@@ -182,8 +182,8 @@ npm publish --access public
 Install globally after publish:
 
 ```bash
-npm i -g ashishcode
-ashishcode
+npm i -g obsidian-code
+obsidian
 ```
 
 This package runs the source CLI through Bun, so Bun must be installed on the target machine.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Global launcher for this repo: run from any cwd with `claude-local` after
+ * Global launcher for this repo: run from any cwd with `obsidian-local` after
  * `npm link`, `bun link`, or `npm install -g` from the repo root.
  *
  * Forwards all CLI args to src/entrypoints/cli.tsx using Bun.
